@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="shortcut icon" href="" type="image/x-icon">
+
+  <title>Fusée-MD Session 3</title>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "url": "https://railway.app",
+    "logo": "https://files.catbox.moe/fi2gjj.jpg"
+  }
+  </script>
+
   <style>
     body {
       background-color: black;
@@ -13,13 +24,7 @@
       height: 100vh;
       margin: 0;
       color: white;
-    }
-
-    {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "url": "https://railway.app",
-            "logo": "https://files.catbox.moe/fi2gjj.jpg"
+      font-family: Arial, sans-serif;
     }
 
     .button-container {
@@ -27,6 +32,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
     }
 
     h3 {
@@ -36,44 +42,31 @@
     }
 
     .button {
-      width: 140px;
-      height: 40px;
+      width: 160px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
       padding: 0px 15px;
-      background-color: red;
       border-radius: 10px;
       border: none;
       color: white;
-      position: relative;
       cursor: pointer;
       font-weight: 900;
-      transition-duration: .2s;
-      background: linear-gradient(0deg, #000, #272727);
       text-decoration: none;
+      background: linear-gradient(0deg, #000, #272727);
+      position: relative;
+      transition: 0.2s;
     }
 
-  
-    footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #222; /* Darker gray footer background */
-    color: #fff;
-    padding: 10px 0;
-    text-align: center;
-    font-size: 14px;
-    
-  }
-    .button:before, .button:after {
+    .button:before,
+    .button:after {
       content: '';
       position: absolute;
       left: -2px;
       top: -2px;
       border-radius: 10px;
-      background: linear-gradient(45deg, #48ff00, #15ff00, #000000,#000000, #ff0000);
+      background: linear-gradient(45deg, #48ff00, #15ff00, #000000, #000000, #ff0000);
       background-size: 400%;
       width: calc(100% + 4px);
       height: calc(100% + 4px);
@@ -81,26 +74,14 @@
       animation: steam 10s linear infinite;
     }
 
-    @keyframes steam {
-      0% {
-        background-position: 0 0;
-      }
-
-      50% {
-        background-position: 400% 0;
-      }
-
-      100% {
-        background-position: 0 0;
-      }
-    }
-
     .button:after {
       filter: blur(50px);
     }
 
-    .button span {
-      z-index: 1;
+    @keyframes steam {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
     }
 
     @keyframes fadeIn {
@@ -108,24 +89,55 @@
         opacity: 1;
       }
     }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #222;
+      color: #fff;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 14px;
+    }
   </style>
 </head>
+
 <body>
+
   <div class="button-container">
-    <h3> FUSÉE-MD SESSION 3</h3>
-    <div></div>
-    <a href="/qr" class="button" target="_blank"> <span>QR-CODE</span> </a> <br>
-    <a href="/pair" class="button" target="_blank"> <span>PAIRING-CODE</span> </a> <br>
-    <a href="https://github.com/WeedTech/FUS-E-MD/fork" class="button" target="_blank"> <span>FORK FUS-E-MD</span> </a> <br> </a>
-    <a href="https://whatsapp.com/channel/0029Vb2J9C91dAw7vxA75y2V" class="button" target="_blank"> <span>WhatsApp</span> </a> <br>
+    <h3>FUSÉE-MD SESSION 3</h3>
+
+    <a href="/qr" class="button" target="_blank">
+      <span>QR-CODE</span>
+    </a>
+
+    <a href="/pair" class="button" target="_blank">
+      <span>PAIRING-CODE</span>
+    </a>
+
+    <a href="https://github.com/WeedTech/FUS-E-MD/fork" class="button" target="_blank">
+      <span>FORK FUS-E-MD</span>
+    </a>
+
+    <a href="https://whatsapp.com/channel/0029Vb2J9C91dAw7vxA75y2V" class="button" target="_blank">
+      <span>WHATSAPP</span>
+    </a>
 
     <p>FACE ANY ISSUES CLICK ERROR BUTTON</p>
 
-    <a href="https://wa.me/+50939032060" class="button" target="_blank"> <span>ERROR</span> </a> <br>
+    <a href="https://wa.me/+50939032060" class="button" target="_blank">
+      <span>ERROR</span>
+    </a>
+  </div>
 
-    <footer>
-     bot name &copy; <span id="currentYear"></span>
-    </footer>
-  
+  <footer>
+    bot name © <span id="currentYear"></span>
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+  </script>
+
 </body>
 </html>
