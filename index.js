@@ -1,29 +1,43 @@
 const express = require('express');
 const app = express();
-__path = process.cwd()
 const bodyParser = require("body-parser");
+
 const PORT = process.env.PORT || 8000;
-let server = require('./qr'),
-    code = require('./pair');
+const __path = process.cwd();
+
+const server = require('./qr');
+const code = require('./pair');
+
+// Increase event listeners limit
 require('events').EventEmitter.defaultMaxListeners = 500;
-app.use('/server', server);
-app.use('/code', code);
-app.use('/pair',async (req, res, next) => {
-res.sendFile(__path + '/pair.html')
-})
-app.use('/qr',async (req, res, next) => {
-res.sendFile(__path + '/qr.html')
-})
-app.use('/',async (req, res, next) => {
-res.sendFile(__path + '/main.html')
-})
+
+// Middlewares (mete yo avan routes yo)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Routes
+app.use('/server', server);
+app.use('/code', code);
+
+app.get('/pair', (req, res) => {
+  res.sendFile(__path + '/pair.html');
+});
+
+app.get('/qr', (req, res) => {
+  res.sendFile(__path + '/qr.html');
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(__path + '/main.html');
+});
+
+// Start server
 app.listen(PORT, () => {
-    console.log(`
-Don't Forget To Give Star Fus-e-MD 
+  console.log(`
+🔥 Fus-e-MD Server Running
+👉 http://localhost:${PORT}
+Don't forget to star the project!
+`);
+});
 
- Server running on http://localhost:` + PORT)
-})
-
-module.exports = app
+module.exports = app;
