@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: Fusée MD-pair-site
+    name: fus-e-md-pair-site
     env: docker
     plan: free
     branch: main
