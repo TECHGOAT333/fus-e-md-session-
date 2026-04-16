@@ -1,6 +1,7 @@
 {
   "name": "fusée-md-pair",
   "version": "1.0.0",
+  "type": "module",
   "description": "A multi-functional WhatsApp bot Web pairing code system by Weed-Tech.",
   "main": "index.js",
   "scripts": {
