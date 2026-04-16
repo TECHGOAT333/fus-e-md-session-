@@ -1,28 +1,31 @@
-const express = require('express');
-const fs = require('fs-extra');
-const pino = require("pino");
-const path = require('path');
-const { makeid } = require('./gen-id');
-const { upload } = require('./mega');
+import express from 'express';
+import fs from 'fs-extra';
+import pino from 'pino';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { makeid } from './gen-id.js'; 
+import { upload } from './mega.js';   
 
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    delay,
-    Browsers,
-    makeCacheableSignalKeyStore
-} = require('@whiskeysockets/baileys');
+import pkg from '@whiskeysockets/baileys';
+const { 
+    default: makeWASocket, 
+    useMultiFileAuthState, 
+    delay, 
+    makeCacheableSignalKeyStore 
+} = pkg;
+
+// Fix for __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const router = express.Router();
-
-// Use Render's PORT or default to 3000
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/', router);
 
-// Function to clean up temporary session files
+// Clean up function
 async function removeFile(folderPath) {
     if (fs.existsSync(folderPath)) {
         await fs.remove(folderPath);
@@ -33,23 +36,17 @@ router.get('/pair', async (req, res) => {
     const id = makeid();
     let num = req.query.number;
 
-    if (!num) {
-        return res.send({ code: "❗ Enter a valid number" });
-    }
+    if (!num) return res.send({ code: "❗ Please enter a valid number" });
 
-    // Sanitize number (remove +, spaces, etc.)
+    // Clean phone number
     num = num.replace(/[^0-9]/g, '');
 
-    if (num.length < 10) {
-        return res.send({ code: "❗ Number is too short" });
-    }
+    if (num.length < 10) return res.send({ code: "❗ Number is too short" });
 
     const sessionPath = path.join(__dirname, 'temp', id);
 
     try {
-        // Clean up any existing residue before starting
         await removeFile(sessionPath);
-
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
 
         const sock = makeWASocket({
@@ -59,7 +56,6 @@ router.get('/pair', async (req, res) => {
             },
             printQRInTerminal: false,
             logger: pino({ level: "fatal" }),
-            // Stable browser identity to trigger notifications
             browser: ["Ubuntu", "Chrome", "110.0.5481.178"],
             connectTimeoutMs: 60000,
             defaultQueryTimeoutMs: 0
@@ -69,20 +65,16 @@ router.get('/pair', async (req, res) => {
 
         // 🔑 GENERATE PAIRING CODE
         if (!sock.authState.creds.registered) {
-            // Wait 6 seconds for the handshake to stabilize
-            await delay(6000);
-
+            await delay(6000); // Wait for handshake
             try {
                 const code = await sock.requestPairingCode(num);
                 if (code && !res.headersSent) {
-                    console.log(`✅ Code generated for ${num}: ${code}`);
+                    console.log(`✅ Pairing Code for ${num}: ${code}`);
                     return res.send({ code });
                 }
             } catch (err) {
-                console.error("PAIRING ERROR:", err);
-                if (!res.headersSent) {
-                    return res.send({ code: "❗ WhatsApp refused the request, please try again" });
-                }
+                console.error("Pairing Error:", err);
+                if (!res.headersSent) return res.send({ code: "❗ Request refused by WhatsApp" });
             }
         }
 
@@ -91,7 +83,7 @@ router.get('/pair', async (req, res) => {
             const { connection, lastDisconnect } = update;
 
             if (connection === "open") {
-                console.log("✅ Bot Connected!");
+                console.log("✅ Successfully connected!");
                 await delay(5000);
 
                 try {
@@ -105,15 +97,13 @@ router.get('/pair', async (req, res) => {
 
                         const session_id = mega_url.replace('https://mega.nz/file/', '');
 
-                        // Success Messages
-                        let msg = `🚀 *Fusée MD Connected!*\n\n🔐 *Session ID:*\n${session_id}\n\n© Weed-Tech`;
+                        let msg = `🚀 *Fusée MD Connected!*\n\n🔐 *Session ID:*\n${session_id}\n\n© Weed-Tech 🚀`;
                         await sock.sendMessage(sock.user.id, { text: msg });
                     }
                 } catch (e) {
-                    console.error("UPLOAD ERROR:", e);
+                    console.error("Mega Upload Error:", e);
                 }
 
-                // Final cleanup
                 await delay(3000);
                 await removeFile(sessionPath);
             }
@@ -127,21 +117,19 @@ router.get('/pair', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("SERVER ERROR:", err);
+        console.error("Critical Server Error:", err);
         await removeFile(sessionPath);
-        if (!res.headersSent) {
-            return res.send({ code: "❗ Server busy, please try again" });
-        }
+        if (!res.headersSent) res.send({ code: "❗ Service Temporarily Unavailable" });
     }
 });
 
-// Start the server
-app.listen(PORT, () => {
+// IMPORTANT FOR RENDER: Listen on 0.0.0.0
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`
-🚀 Fusée MD Server is Running!
+🚀 Fusée MD Web Server Started!
 📍 Port: ${PORT}
-🔗 Local: http://localhost:${PORT}
+🔗 Ready for pairing requests.
     `);
 });
 
-module.exports = app;
+export default app;
